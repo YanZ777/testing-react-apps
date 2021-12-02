@@ -22,6 +22,21 @@ test('submitting the form calls onSubmit with username and password', () => {
   //
   // assert that submittedData is correct
   // 💰 use `toEqual` from Jest: 📜 https://jestjs.io/docs/en/expect#toequalvalue
+
+  let submittedData;
+  const handleSubmit = data => (submittedData = data);
+
+  render(<Login onSubmit={handleSubmit}/>)
+
+  const username = screen.getByLabelText('Username');
+  const password = screen.getByLabelText('Password');
+
+  userEvent.type(username, 'hello');
+  userEvent.type(password, 'world');
+
+  const submitButton = screen.getByText('Submit');
+  userEvent.click(submitButton);
+  expect(submittedData).toEqual({username: 'hello', password: 'world'});
 })
 
 /*
