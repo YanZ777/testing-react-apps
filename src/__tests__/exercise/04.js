@@ -5,6 +5,15 @@ import * as React from 'react'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Login from '../../components/login'
+import faker from 'faker'
+
+
+function buildLoginForm() {
+   return {
+      username: faker.internet.userName(),
+      password: faker.internet.password()
+   }
+}
 
 test('submitting the form calls onSubmit with username and password', () => {
   // 🐨 create a variable called "submittedData" and a handleSubmit function that
@@ -29,16 +38,17 @@ test('submitting the form calls onSubmit with username and password', () => {
 
   render(<Login onSubmit={handleSubmit}/>)
 
-  const username = screen.getByLabelText('Username');
-  const password = screen.getByLabelText('Password');
+  const usernameField = screen.getByLabelText('Username');
+  const passwordField = screen.getByLabelText('Password');
+  const { username, password } = buildLoginForm();
 
-  userEvent.type(username, 'hello');
-  userEvent.type(password, 'world');
+  userEvent.type(usernameField, username);
+  userEvent.type(passwordField, password);
 
   const submitButton = screen.getByText('Submit');
   userEvent.click(submitButton);
   // expect(submittedData).toEqual({username: 'hello', password: 'world'});
-  expect(handleSubmit).toHaveBeenCalledWith({username: 'hello', password: 'world'});
+  expect(handleSubmit).toHaveBeenCalledWith({username, password});
 })
 
 /*
