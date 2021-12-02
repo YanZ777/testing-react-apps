@@ -8,10 +8,10 @@ import Login from '../../components/login'
 import faker from 'faker'
 
 
-function buildLoginForm() {
+function buildLoginForm(override = {}) {
    return {
-      username: faker.internet.userName(),
-      password: faker.internet.password()
+      username: override.username ?? faker.internet.userName(),
+      password: override.password ?? faker.internet.password()
    }
 }
 
@@ -40,7 +40,7 @@ test('submitting the form calls onSubmit with username and password', () => {
 
   const usernameField = screen.getByLabelText('Username');
   const passwordField = screen.getByLabelText('Password');
-  const { username, password } = buildLoginForm();
+  const { username, password } = buildLoginForm({ username: 'hello', password: 'world' });
 
   userEvent.type(usernameField, username);
   userEvent.type(passwordField, password);
