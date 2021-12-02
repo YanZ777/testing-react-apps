@@ -5,15 +5,18 @@ import * as React from 'react'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Login from '../../components/login'
-import faker from 'faker'
+// import faker from 'faker'
+import {build, fake} from '@jackfranklin/test-data-bot'
 
 
+/*
 function buildLoginForm(override = {}) {
    return {
       username: override.username ?? faker.internet.userName(),
       password: override.password ?? faker.internet.password()
    }
 }
+*/
 
 test('submitting the form calls onSubmit with username and password', () => {
   // 🐨 create a variable called "submittedData" and a handleSubmit function that
@@ -40,7 +43,15 @@ test('submitting the form calls onSubmit with username and password', () => {
 
   const usernameField = screen.getByLabelText('Username');
   const passwordField = screen.getByLabelText('Password');
-  const { username, password } = buildLoginForm({ username: 'hello', password: 'world' });
+
+  const userBuilder = build('User', {
+   fields: {
+     username: fake(f => f.name.findName()),
+     password: fake(f => f.name.findName()),
+   },
+ });
+
+  const { username, password } = userBuilder();
 
   userEvent.type(usernameField, username);
   userEvent.type(passwordField, password);
