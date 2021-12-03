@@ -84,7 +84,9 @@ test ('not filling in the username displays an error', async () => {
    userEvent.type(screen.getByLabelText(/password/i), password);
    userEvent.click(screen.getByRole('button', {name: /submit/i}));
    await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/));
-   expect(screen.getByText('username required')).toBeInTheDocument();
+   expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+      `"username required"`,
+    )
 })
 
 test ('not filling in the password displays an error', async () => {
@@ -94,5 +96,7 @@ test ('not filling in the password displays an error', async () => {
    userEvent.type(screen.getByLabelText(/username/i), username);
    userEvent.click(screen.getByRole('button', {name: /submit/i}));
    await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/));
-   expect(screen.getByText('password required')).toBeInTheDocument();
+   expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
+      `"password required"`,
+    )
 })
