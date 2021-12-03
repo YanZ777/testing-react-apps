@@ -7,7 +7,8 @@ import {render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
 // 🐨 you'll need to import rest from 'msw' and setupServer from msw/node
-import {rest} from 'msw';
+// import {rest} from 'msw';
+import { handlers } from '../../test/server-handlers';
 import {setupServer} from 'msw/node';
 import Login from '../../components/login-submission'
 
@@ -30,6 +31,7 @@ const buildLoginForm = build({
 // 🐨 before all the tests, start the server with `server.listen()`
 // 🐨 after all the tests, stop the server with `server.close()`
 
+/*
 const server = setupServer(
    rest.post(
       'https://auth-provider.example.com/api/login',
@@ -39,6 +41,11 @@ const server = setupServer(
          )
       },
    )
+);
+*/
+
+const server = setupServer(
+   ...handlers,
 );
 
 beforeAll(() => {
