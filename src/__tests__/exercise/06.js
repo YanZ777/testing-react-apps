@@ -4,14 +4,19 @@
 import * as React from 'react'
 import {render, screen, act} from '@testing-library/react'
 import Location from '../../examples/location'
+import {useCurrentPosition} from 'react-use-geolocation'
 
 // 🐨 set window.navigator.geolocation to an object that has a getCurrentPosition mock function
 
+jest.mock('react-use-geolocation');
+
+/*
 beforeAll(() => {
    window.navigator.geolocation = {
       getCurrentPosition: jest.fn(),
    }
 })
+*/
 
 // 💰 I'm going to give you this handy utility function
 // it allows you to create a promise that you can resolve/reject on demand.
@@ -43,7 +48,8 @@ test('displays the users current location', async () => {
   };
   // 🐨 create a deferred promise here
   //
-  const { promise, resolve } = deferred()
+  // const { promise, resolve } = deferred()
+
   // 🐨 Now we need to mock the geolocation's getCurrentPosition function
   // To mock something you need to know its API and simulate that in your mock:
   // 📜 https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition
@@ -59,6 +65,7 @@ test('displays the users current location', async () => {
   // 💰 promise.then(() => {/* call the callback with the fake position */})
   //
 
+  /*
   window.navigator.geolocation.getCurrentPosition.mockImplementation(
      callback => {
         promise.then(() => {
@@ -66,6 +73,16 @@ test('displays the users current location', async () => {
         })
      }
   );
+  */
+
+  let setReturnValue
+  function mockCurrentPosition() {
+   const state = React.useState([])
+   setReturnValue = state[1]
+   return state[0]
+  }
+
+ useCurrentPosition.mockImplementation(mockCurrentPosition)
 
   // 🐨 now that setup is done, render the Location component itself
   //
@@ -76,10 +93,17 @@ test('displays the users current location', async () => {
   expect(screen.getByLabelText(/loading/)).toBeInTheDocument();
   // 🐨 resolve the deferred promise
   // 🐨 wait for the promise to resolve
+  /*
   await act(async () => {
      resolve()
      await promise
   })
+  */
+
+  act(() => {
+     setReturnValue([fakePosition])
+  })
+
   // 💰 right around here, you'll probably notice you get an error log in the
   // test output. You can ignore that for now and just add this next line:
   // act(() => {})
