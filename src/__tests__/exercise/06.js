@@ -8,15 +8,13 @@ import {useCurrentPosition} from 'react-use-geolocation'
 
 // 🐨 set window.navigator.geolocation to an object that has a getCurrentPosition mock function
 
-jest.mock('react-use-geolocation');
+// jest.mock('react-use-geolocation');
 
-/*
 beforeAll(() => {
    window.navigator.geolocation = {
       getCurrentPosition: jest.fn(),
    }
 })
-*/
 
 // 💰 I'm going to give you this handy utility function
 // it allows you to create a promise that you can resolve/reject on demand.
@@ -48,7 +46,7 @@ test('displays the users current location', async () => {
   };
   // 🐨 create a deferred promise here
   //
-  // const { promise, resolve } = deferred()
+  const { promise, resolve } = deferred()
 
   // 🐨 Now we need to mock the geolocation's getCurrentPosition function
   // To mock something you need to know its API and simulate that in your mock:
@@ -65,24 +63,24 @@ test('displays the users current location', async () => {
   // 💰 promise.then(() => {/* call the callback with the fake position */})
   //
 
-  /*
   window.navigator.geolocation.getCurrentPosition.mockImplementation(
      callback => {
         promise.then(() => {
            callback(fakePosition)
-        })
-     }
-  );
-  */
-
+         })
+      }
+   );
+      
+  /*
   let setReturnValue
   function mockCurrentPosition() {
-   const state = React.useState([])
-   setReturnValue = state[1]
-   return state[0]
-  }
-
- useCurrentPosition.mockImplementation(mockCurrentPosition)
+     const state = React.useState([])
+     setReturnValue = state[1]
+     return state[0]
+   }
+   
+   useCurrentPosition.mockImplementation(mockCurrentPosition)
+   */
 
   // 🐨 now that setup is done, render the Location component itself
   //
@@ -93,16 +91,17 @@ test('displays the users current location', async () => {
   expect(screen.getByLabelText(/loading/)).toBeInTheDocument();
   // 🐨 resolve the deferred promise
   // 🐨 wait for the promise to resolve
-  /*
+
   await act(async () => {
      resolve()
      await promise
   })
-  */
 
+  /*
   act(() => {
      setReturnValue([fakePosition])
   })
+  */
 
   // 💰 right around here, you'll probably notice you get an error log in the
   // test output. You can ignore that for now and just add this next line:
@@ -121,6 +120,36 @@ test('displays the users current location', async () => {
   expect(screen.getByText('Longitude: 115')).toBeInTheDocument();
 })
 
+
+test('fails to display the users current location', async () => {
+   const fakePosition = {
+      coords: {
+         latitude: 45,
+         longitude: 115,
+      }
+   };
+
+   const { promise, reject } = deferred()
+
+   window.navigator.geolocation.getCurrentPosition.mockImplementation(
+      (successCallback, errorCallback) => {
+         promise.catch(() => {
+            errorCallback(new Error('something went wrong'))
+          })
+       }
+    );
+
+    render(<Location />)
+
+    expect(screen.getByLabelText(/loading/)).toBeInTheDocument();
+
+    await act(async () => {
+      reject()
+   })
+
+   expect(screen.queryByLabelText(/loading/)).not.toBeInTheDocument();
+   expect(screen.getByRole('alert')).toHaveTextContent('something went wrong')
+})
 /*
 eslint
   no-unused-vars: "off",
