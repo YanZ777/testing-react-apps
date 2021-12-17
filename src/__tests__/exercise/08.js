@@ -5,6 +5,7 @@ import * as React from 'react'
 import {render, screen, act} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useCounter from '../../components/use-counter'
+import { renderHook, act as actHook } from '@testing-library/react-hooks'
 
 // 🐨 create a simple function component that uses the useCounter hook
 // and then exposes some UI that our test can interact with to test the
@@ -74,26 +75,26 @@ function customRender(initialCount = 0, customStep = 1) {
 }
 
 test('allows customization of the initial count', () => {
-   const result = customRender(5);
+   const {result} = renderHook(() => useCounter({initialCount: 5}));
    expect(result.current.count).toBe(5);
 
-   act(() => result.current.increment());
+   actHook(() => result.current.increment());
    expect(result.current.count).toBe(6);
 
-   act(() => result.current.decrement());
-   act(() => result.current.decrement());
+   actHook(() => result.current.decrement());
+   actHook(() => result.current.decrement());
    expect(result.current.count).toBe(4);
 });
 
 test('allows customization of the step', () => {
-   const result = customRender(3, 2);
+   const {result} = renderHook(() => useCounter({initialCount: 3, step: 2}));
    expect(result.current.count).toBe(3);
 
-   act(() => result.current.increment());
+   actHook(() => result.current.increment());
    expect(result.current.count).toBe(5);
 
-   act(() => result.current.decrement());
-   act(() => result.current.decrement());
+   actHook(() => result.current.decrement());
+   actHook(() => result.current.decrement());
    expect(result.current.count).toBe(1);
 });
 
