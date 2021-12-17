@@ -61,4 +61,41 @@ test('tests the custom hook by assigning the result to a value', () => {
    expect(result.count).toBe(-1);
 });
 
+
+
+function customRender(initialCount = 0, customStep = 1) {
+   const results = {};
+   function TestComponent() {
+     results.current = useCounter({initialCount, step: customStep})
+     return null
+   }
+   render(<TestComponent />);
+   return results;
+}
+
+test('allows customization of the initial count', () => {
+   const result = customRender(5);
+   expect(result.current.count).toBe(5);
+
+   act(() => result.current.increment());
+   expect(result.current.count).toBe(6);
+
+   act(() => result.current.decrement());
+   act(() => result.current.decrement());
+   expect(result.current.count).toBe(4);
+});
+
+test('allows customization of the step', () => {
+   const result = customRender(3, 2);
+   expect(result.current.count).toBe(3);
+
+   act(() => result.current.increment());
+   expect(result.current.count).toBe(5);
+
+   act(() => result.current.decrement());
+   act(() => result.current.decrement());
+   expect(result.current.count).toBe(1);
+});
+
+
 /* eslint no-unused-vars:0 */
